@@ -1,7 +1,13 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../redux/cartSlice';
 const ProductDetailsPage = () => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+  };
   const { id } = useParams();
   //fake data
   const product = {
@@ -18,7 +24,7 @@ const ProductDetailsPage = () => {
       <img src={product.image} alt={product.name} />
       <p>Price: ${product.price}</p>
       <p>{product.description}</p>
-      <button>Add to Cart</button>
+      <button onClick={handleAddToCart}>Add to Cart</button>
     </div>
   );
 };
