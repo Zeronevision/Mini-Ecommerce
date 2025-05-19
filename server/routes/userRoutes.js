@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
+const { protect } = require('../middleware/authMiddleware');
 
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
@@ -37,5 +38,34 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Error logging in' });
   }
 });
+
+router.put('/:id', protect, async (req, res) => {
+    const { name, email } = req.body;
+  
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      user.name = name || user.name;
+      user.email = email || user.email;
+  
+      await user.save();
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating user' });
+    }
+  });
+  
+router.delete('/:id', protect, async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      await user.remove();
+      res.json({ message: 'User removed' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting user' });
+    }
+  });
 
 module.exports = router;
