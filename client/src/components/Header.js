@@ -68,6 +68,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
@@ -82,7 +83,8 @@ const Header = () => {
           <NavLink to="/cart">Cart</NavLink>
           {user ? (
             <>
-              <UserInfo>Welcome {user.user.name}</UserInfo>     
+              {user.user.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+              <UserInfo>Welcome, {user.user.name}</UserInfo>
               <Button onClick={handleLogout}>Logout</Button>
             </>
           ) : (

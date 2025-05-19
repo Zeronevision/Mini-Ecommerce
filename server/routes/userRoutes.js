@@ -5,6 +5,47 @@ const User = require('../models/User');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 
+// Create first admin user
+router.post('/create-admin', async (req, res) => {
+  try {
+    // Check if any admin exists
+    const adminExists = await User.findOne({ isAdmin: true });
+    if (adminExists) {
+      return res.status(400).json({ message: 'Admin user already exists' });
+    }
+
+    const { name, email, password } = req.body;
+    
+    // Check if user with email exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      isAdmin: true
+    });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating admin user' });
+  }
+});
+
+// Register user
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
   
@@ -16,12 +57,21 @@ router.post('/register', async (req, res) => {
     const user = await User.create({ name, email, password: hashedPassword });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error creating user' });
   }
 });
 
+// Login user
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -33,7 +83,15 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in' });
   }
