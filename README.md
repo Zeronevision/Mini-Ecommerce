@@ -157,7 +157,7 @@ mini-ecommerce/
 
 ## 👨‍💻 Author
 
-Your Name
+Amirparsa
 - GitHub: [@Zeronevision](https://github.com/Zeronevision)
 
 ## 🙏 Acknowledgments
