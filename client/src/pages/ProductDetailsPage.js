@@ -45,6 +45,7 @@ const ProductInfo = styled.div`
 `;
 
 const ProductName = styled.h1`
+  text-align: center;
   margin: 0;
   color: #333;
   font-size: 2rem;
@@ -73,7 +74,7 @@ const AddToCartButton = styled.button`
   font-weight: 500;
   font-size: 1.1rem;
   transition: background-color 0.2s ease;
-  margin-top: 1rem;
+  margin-top: auto;
 
   &:hover {
     background: #218838;

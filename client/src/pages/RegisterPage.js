@@ -11,6 +11,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 200px);
+  width: 100%;
   padding: 20px;
 `;
 

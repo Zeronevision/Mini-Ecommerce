@@ -8,7 +8,7 @@ import { clearCart } from '../redux/cartSlice';
 
 const Container = styled.div`
   max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   padding: 2rem;
 `;
 
@@ -21,13 +21,15 @@ const CheckoutContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-
+  
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;
 
 const Form = styled.form`
+  display: flex;
+  flex-direction: column;
   background: white;
   padding: 2rem;
   border-radius: 8px;
@@ -35,7 +37,9 @@ const Form = styled.form`
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const Label = styled.label`
@@ -119,6 +123,7 @@ const TotalAmount = styled.div`
 `;
 
 const PaymentButton = styled.button`
+  margin-top: auto;
   width: 100%;
   padding: 1rem;
   background: #28a745;
@@ -236,6 +241,18 @@ const CheckoutPage = () => {
       <CheckoutContainer>
         <Form onSubmit={handleSubmit}>
           <FormGroup>
+            <Label >Name</Label>
+            <Input
+              type="text"
+              disabled
+              value={user.user.name}
+            />
+            <Label>Email</Label>
+            <Input
+              type="text"
+              disabled
+              value={user.user.email}
+            />
             <Label>Shipping Address</Label>
             <Input
               type="text"

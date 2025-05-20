@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-const Container = styled.div`
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-`;
+import styled from 'styled-components';
 
 const Title = styled.h1`
   margin-bottom: 2rem;
@@ -151,6 +147,17 @@ const ProductManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isFetching, setIsFetching] = useState(true);
+  const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user || !user.user.isAdmin) {
+      navigate('/login', { state: { from: '/admin' } });
+      return;
+    }
+
+    fetchProducts();
+  }, [user, navigate]);
 
   const fetchProducts = async () => {
     try {
@@ -165,10 +172,6 @@ const ProductManagement = () => {
       setIsFetching(false);
     }
   };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   const handleAdd = () => {
     setSelectedProduct(null);
@@ -185,10 +188,16 @@ const ProductManagement = () => {
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/products/${productId}`);
+        await axios.delete(`http://localhost:5000/api/products/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         fetchProducts();
       } catch (error) {
         console.error('Error deleting product:', error);
+        setError('Failed to delete product. Please try again.');
       }
     }
   };
@@ -224,6 +233,7 @@ const ProductManagement = () => {
           formData,
           {
             headers: {
+              Authorization: `Bearer ${user.token}`,
               'Content-Type': 'multipart/form-data',
             },
           }
@@ -231,6 +241,7 @@ const ProductManagement = () => {
       } else {
         await axios.post('http://localhost:5000/api/products', formData, {
           headers: {
+            Authorization: `Bearer ${user.token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -246,15 +257,19 @@ const ProductManagement = () => {
     }
   };
 
+  if (!user || !user.user.isAdmin) {
+    return null;
+  }
+
   if (isFetching) {
     return (
-      <Container>
+      <div>
         <LoadingSpinner>Loading products...</LoadingSpinner>
-      </Container>
+      </div>
     );
   }
   return (
-    <Container>
+    <div>
       <Title>Product Management</Title>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Button className="add" onClick={handleAdd}>
@@ -334,7 +349,7 @@ const ProductManagement = () => {
           </ModalContent>
         </Modal>
       )}
-    </Container>
+    </div>
   );
 };
 

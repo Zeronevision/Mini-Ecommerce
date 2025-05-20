@@ -3,6 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const Product = require('../models/Product');
 const router = express.Router();
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -24,7 +26,7 @@ const upload = multer({
   }
 });
 
-// Get all products
+// Get all products (public)
 router.get('/', async (req, res) => {
   try {
     const products = await Product.find();
@@ -34,7 +36,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get a single product by ID
+// Get a single product by ID (public)
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -47,8 +49,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create a new product
-router.post('/', upload.single('image'), async (req, res) => {
+// Create a new product (admin only)
+router.post('/', [auth, admin], upload.single('image'), async (req, res) => {
   try {
     const { name, price, description } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
@@ -70,8 +72,8 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// Update a product
-router.put('/:id', upload.single('image'), async (req, res) => {
+// Update a product (admin only)
+router.put('/:id', [auth, admin], upload.single('image'), async (req, res) => {
   try {
     const { name, price, description } = req.body;
     const updateData = { name, price, description };
@@ -96,8 +98,8 @@ router.put('/:id', upload.single('image'), async (req, res) => {
   }
 });
 
-// Delete a product
-router.delete('/:id', async (req, res) => {
+// Delete a product (admin only)
+router.delete('/:id', [auth, admin], async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     

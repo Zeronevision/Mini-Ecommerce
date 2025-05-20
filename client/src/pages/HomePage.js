@@ -7,7 +7,7 @@ import ProductCard from '../components/ProductCard';
 const Container = styled.div`
   padding: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 `;
 
 const Title = styled.h1`
@@ -15,7 +15,19 @@ const Title = styled.h1`
   margin-bottom: 2rem;
   color: #333;
 `;
+const Heading = styled.h2`
+  font-size: 2rem; 
+  color: #333; 
+  text-align: center; 
+  margin-bottom: 1rem; 
+`;
 
+const Description = styled.p`
+  font-size: 1rem; 
+  color: #666; 
+  line-height: 1.6; 
+  text-align: center; 
+`;
 const ProductGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -74,6 +86,11 @@ const HomePage = () => {
   return (
     <Container>
       <Title>Welcome to Mini E-commerce</Title>
+      <Heading>Our Foods</Heading>
+      <Description>
+      your one-stop destination for all your vision needs.
+        We offer a wide range of high-quality products to enhance your vision and overall eye health.
+      </Description>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <ProductGrid>
         {products.map((product) => (

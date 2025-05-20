@@ -6,9 +6,9 @@ import ProductManagement from '../components/ProductManagement';
 import { Link } from 'react-router-dom';
 
 const Container = styled.div`
+    max-width: 1200px;
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 `;
 
 const Title = styled.h1`
