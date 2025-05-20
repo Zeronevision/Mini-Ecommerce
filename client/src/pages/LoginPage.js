@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -106,15 +106,18 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isLoading, error } = useSelector((state) => state.auth);
+  const location = useLocation();
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      // Redirect to the page user was trying to access, or home
+      const from = location.state?.from || '/';
+      navigate(from);
     }
     return () => {
       dispatch(reset());
     };
-  }, [user, navigate, dispatch]);
+  }, [user, navigate, dispatch, location]);
 
   const handleSubmit = async (values) => {
     dispatch(login(values));

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { syncCartToServer } from './cartSlice';
 
 const API_URL = 'http://localhost:5000/api/users';
 
@@ -33,13 +34,17 @@ export const register = createAsyncThunk(
 // Login user
 export const login = createAsyncThunk(
   'auth/login',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.post(`${API_URL}/login`, {
         email,
         password,
       });
       localStorage.setItem('user', JSON.stringify(response.data));
+      
+      // Sync cart after successful login
+      await dispatch(syncCartToServer());
+      
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
